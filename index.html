@@ -4,6 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <base href="/lan/" />
   <title>Lanna Culture Explorer | Chiang Mai</title>
   <link rel="stylesheet" href="public/css/style.css" />
   <link rel="stylesheet" href="public/css/tourist-cards.css?v=14" />
@@ -128,6 +129,7 @@
       aboutDrawer = document.getElementById("aboutDrawer"),
       drawerScrim = document.getElementById("drawerScrim");
     function setAbout(open) {
+      if (!open && aboutDrawer.contains(document.activeElement)) aboutButton.focus();
       document.body.classList.toggle("about-open", open);
       aboutButton.setAttribute("aria-expanded", open);
       aboutDrawer.setAttribute("aria-hidden", !open);
