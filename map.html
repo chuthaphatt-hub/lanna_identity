@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>แผนที่ล้านนา | Chiang Mai</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="public/css/style.css" />
+  <style>
+    body {
+      background: #f7f1e7;
+    }
+
+    .map-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 5vw;
+      background: #181411;
+      color: #fff;
+      font:
+        700 0.76rem Arial,
+        sans-serif;
+      letter-spacing: 0.1em;
+    }
+
+    .map-top a {
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .map-shell {
+      display: grid;
+      grid-template-columns: 310px 1fr;
+      min-height: calc(100vh - 54px);
+    }
+
+    .map-panel {
+      padding: 25px;
+      background: #fcf9f2;
+      z-index: 2;
+    }
+
+    .map-panel .eyebrow {
+      margin-top: 0;
+    }
+
+    .map-panel h1 {
+      font-size: 2rem;
+      font-weight: 400;
+      line-height: 1.18;
+      margin: 0 0 12px;
+    }
+
+    .map-panel p {
+      font-size: 0.9rem;
+    }
+
+    .map-panel label {
+      display: block;
+      padding: 9px 0;
+      cursor: pointer;
+    }
+
+    .map-panel input {
+      accent-color: #237b70;
+      margin-right: 6px;
+    }
+
+    .analysis-layer-group {
+      margin: 19px 0 0;
+      padding-top: 13px;
+      border-top: 1px solid #e3d7c5;
+    }
+
+    .analysis-layer-group:first-child {
+      margin-top: 0;
+    }
+
+    .analysis-layer-group h3 {
+      margin: 0;
+      color: #237b70;
+      font:
+        700 0.78rem Arial,
+        sans-serif;
+      letter-spacing: 0.09em;
+    }
+
+    .legend {
+      margin-top: 22px;
+      padding-top: 12px;
+      border-top: 1px solid #e3d7c5;
+      font-size: 0.83rem;
+    }
+
+    .legend i {
+      display: inline-block;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+
+    .map-canvas {
+      position: relative;
+    }
+
+    .map-canvas,
+    #map {
+      height: calc(100vh - 54px);
+    }
+
+    .map-caption {
+      position: absolute;
+      z-index: 500;
+      bottom: 20px;
+      left: 16px;
+      padding: 8px 11px;
+      background: #fffc;
+      border: 1px solid #c9bca8;
+      font-size: 0.82rem;
+    }
+
+    .popup-photos {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      max-width: 290px;
+      margin: 0 auto;
+      overflow: auto;
+    }
+
+    .popup-photos img {
+      display: block;
+      width: 240px;
+      height: auto;
+      max-height: 240px;
+      object-fit: initial;
+      flex: 0 0 auto;
+    }
+
+    .tour-popup {
+      min-width: 260px;
+    }
+
+    .tour-popup h3 {
+      margin: 4px 0 7px;
+      color: #96382e;
+      font-size: 1.05rem;
+    }
+
+    .tour-popup p {
+      margin: 6px 0;
+      font-size: 0.83rem;
+    }
+
+    .popup-kicker {
+      margin-top: 10px !important;
+      color: #237b70;
+      font:
+        700 0.67rem Arial,
+        sans-serif !important;
+      letter-spacing: 0.1em;
+    }
+
+    .popup-identities {
+      margin: 0 0 9px;
+      padding: 0;
+      list-style: none;
+      border-top: 1px solid #eadfce;
+    }
+
+    .popup-identities li {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 5px 0;
+      border-bottom: 1px solid #eadfce;
+      font-size: 0.82rem;
+    }
+
+    .popup-identities span {
+      color: #756a5c;
+    }
+
+    .popup-route {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 0;
+      background: transparent;
+      color: #24201d;
+      text-decoration: none;
+      font:
+        700 0.8rem Arial,
+        sans-serif;
+    }
+
+    @media (max-width: 760px) {
+      .map-shell {
+        display: block;
+      }
+
+      .map-panel {
+        padding: 18px 7vw;
+      }
+
+      .map-canvas,
+      #map {
+        height: 68vh;
+      }
+
+      .map-panel h1 {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="map-top">
+    <a href="maps.html">← เลือกแผนที่</a><a href="index.html">LANNA / CHIANG MAI</a>
+  </header>
+  <main class="map-shell">
+    <aside class="map-panel">
+      <p class="eyebrow" id="kicker"></p>
+      <h1 id="title"></h1>
+      <p id="intro"></p>
+      <div id="controls"></div>
+      <div id="legend" class="legend"></div>
+    </aside>
+    <section class="map-canvas">
+      <div id="map"></div>
+      <div id="caption" class="map-caption"></div>
+    </section>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="public/js/config.js?v=kernel-legend-3"></script>
+  <script>
+    const preview =
+      new URLSearchParams(location.search).get("mobile-preview") === "1";
+    if (preview) {
+      document.body.classList.add("mobile-preview");
+      document.head.insertAdjacentHTML(
+        "beforeend",
+        "<style>body.mobile-preview{max-width:390px;margin:12px auto;box-shadow:0 0 0 12px #1d1a18,0 12px 36px #0004}body.mobile-preview .map-top{padding:14px 18px}body.mobile-preview .map-shell{display:block;min-height:0}body.mobile-preview .map-panel{padding:18px 24px}body.mobile-preview .map-canvas,body.mobile-preview #map{height:62vh}body.mobile-preview .map-panel h1{font-size:1.6rem}</style>",
+      );
+    }
+    document.head.insertAdjacentHTML(
+      "beforeend",
+      "<style>.map-tabs-wrap{position:absolute;z-index:700;top:16px;right:16px;max-width:min(760px,calc(100% - 32px));font-family:Arial,sans-serif}.map-tabs-toggle{float:right;border:0;background:#181411;color:#fff;padding:11px 14px;cursor:pointer;font:700 .72rem Arial,sans-serif;letter-spacing:.08em}.map-tabs{clear:both;display:flex;background:#fffc;box-shadow:0 5px 18px #0003;border:1px solid #d9cebd}.map-tabs a{display:block;min-width:175px;padding:14px 16px;color:#24201d;text-decoration:none;border-left:1px solid #e3d7c5}.map-tabs a:first-child{border-left:0}.map-tabs a.active{background:#237b70;color:#fff}.map-tabs b{display:block;font-size:.65rem;letter-spacing:.11em;margin-bottom:6px}.map-tabs span{display:block;font-family:Georgia,serif;font-size:1.02rem}.map-tabs-wrap.is-closed .map-tabs{display:none}@media(max-width:760px){.map-tabs-wrap{top:12px;right:12px;max-width:calc(100% - 24px)}.map-tabs{display:block}.map-tabs a{min-width:220px;border-left:0;border-top:1px solid #e3d7c5}.map-tabs a:first-child{border-top:0}}</style>",
+    );
+    document
+      .querySelector(".map-canvas")
+      .insertAdjacentHTML(
+        "beforeend",
+        '<div class="map-tabs-wrap" id="mapTabs"><button class="map-tabs-toggle" type="button" aria-expanded="true">แผนที่อื่น ▴</button><nav class="map-tabs"><a href="map.html?view=points" data-view="points"><b>01 · CULTURAL POINTS</b><span>แผนที่จุดทั้งหมด</span></a><a href="map.html?view=analysis" data-view="analysis"><b>02 · SPATIAL ANALYSIS</b><span>แผนที่การวิเคราะห์</span></a><a href="map.html?view=comparison" data-view="comparison"><b>03 · AREA COMPARISON</b><span>เปรียบเทียบเมืองเก่า</span></a></nav></div>',
+      );
+    const C = MAP_CONFIG,
+      view = new URLSearchParams(location.search).get("view") || "points",
+      meta =
+        {
+          points: [
+            "CULTURAL POINTS",
+            "แผนที่จุดทั้งหมด",
+            "แสดงจุดตรวจจับได้ และจุดที่ได้จากการสร้างระยะ 20 เมตร",
+            "เปิด–ปิดชั้นข้อมูลที่ต้องการดู",
+          ],
+          analysis: [
+            "SPATIAL ANALYSIS",
+            "แผนที่การวิเคราะห์",
+            "ความหนาแน่นและผลวิเคราะห์ Hot Spot / Cold Spot",
+            "น้ำเงิน = Cold Spot · แดง = Hot Spot",
+          ],
+          comparison: [
+            "AREA COMPARISON",
+            "เปรียบเทียบเมืองเก่าและพื้นที่โดยรอบ",
+            "การกระจายตัวของจุดตรวจจับ แยกตามพื้นที่ศึกษา",
+            "แดง = เมืองเก่า · เขียว = พื้นที่โดยรอบ",
+          ],
+        }[view] || [];
+    ["kicker", "title", "intro", "caption"].forEach(
+      (id, i) => (document.querySelector("#" + id).textContent = meta[i]),
+    );
+    const map = L.map("map", { zoomControl: false }).setView(
+      [18.79, 98.985],
+      13,
+    );
+    map.createPane("roads");
+    map.getPane("roads").style.zIndex = 350;
+    const lightMap = L.tileLayer(
+      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
+      { maxZoom: 19, attribution: "Tiles © Esri" },
+    ),
+      darkMap = L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+        { maxZoom: 16, attribution: "Tiles © Esri" },
+      ).addTo(map),
+      streetMap = L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        { maxZoom: 19, attribution: "© OpenStreetMap contributors" },
+      ),
+      imageryMap = L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        { maxZoom: 19, attribution: "Tiles © Esri" },
+      ),
+      baseMapControl = L.control
+        .layers(
+          {
+            "Esri Dark Gray Canvas": darkMap,
+            "Esri World Topographic": lightMap,
+            "Esri World Imagery": imageryMap,
+            OpenStreetMap: streetMap,
+          },
+          null,
+          { position: "topleft", collapsed: true },
+        )
+        .addTo(map);
+    baseMapControl.getContainer().title = "BASE MAP";
+    L.control.zoom({ position: "bottomright" }).addTo(map);
+    const load = (u) =>
+      fetch(`public/${u}`).then((r) => {
+        if (!r.ok) throw Error(u);
+        return r.json();
+      }),
+      esc = (v) =>
+        String(v ?? "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        ),
+      id = (f) => String(f.properties?.[C.pointId]),
+      cats = (f) => C.classes.filter((c) => +f.properties?.[c.count] > 0),
+      check = (id, text, on = false) =>
+        `<label><input id="${id}" type="checkbox"${on ? " checked" : ""}>${text}</label>`;
+    const tabs = document.querySelector("#mapTabs"),
+      tabsToggle = tabs.querySelector("button");
+    tabs.querySelector(`[data-view="${view}"]`).classList.add("active");
+    tabs.classList.add("is-closed");
+    tabsToggle.textContent = "แผนที่อื่น ▾";
+    tabsToggle.setAttribute("aria-expanded", "false");
+    tabsToggle.addEventListener("click", () => {
+      const closed = tabs.classList.toggle("is-closed");
+      tabsToggle.textContent = closed ? "แผนที่อื่น ▾" : "แผนที่อื่น ▴";
+      tabsToggle.setAttribute("aria-expanded", String(!closed));
+    });
+    function popup(f) {
+      const p = f.properties || {},
+        [lng, lat] = f.geometry.coordinates,
+        n = id(f),
+        found = cats(f),
+        photos = [1, 2, 3, 4]
+          .flatMap((run) =>
+            ["left", "right"].map(
+              (side) =>
+                `<img src="public/images/run${run}_point_${n}_${side}.jpg" onerror="this.remove()" alt="ภาพ Street View">`,
+            ),
+          )
+          .join(""),
+        list = found
+          .map(
+            (c) =>
+              `<li><b>${esc(c.label)}</b><span>ค่าความเชื่อมั่น ${((+p[c.confidence] || 0) * 100).toFixed(1)}%</span></li>`,
+          )
+          .join("");
+      return `<div class="tour-popup"><div class="popup-photos">${photos}</div><p class="popup-kicker">อัตลักษณ์ที่ตรวจจับได้</p><h3>${esc(found.map((c) => c.label).join(" · ") || "ไม่ระบุอัตลักษณ์")}</h3><ul class="popup-identities">${list}</ul><p><b>ชื่อถนน:</b> ${esc(p[C.road] || "ไม่ระบุ")}</p><p><b>พิกัด:</b> ${lat.toFixed(6)}, ${lng.toFixed(6)}</p><a class="popup-route" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}">เปิดเส้นทาง ↗</a></div>`;
+    }
+    function markers(data, color, group) {
+      data.features
+        .filter((f) => f.geometry?.type === "Point")
+        .forEach((f) => {
+          const [lng, lat] = f.geometry.coordinates;
+          L.circleMarker([lat, lng], {
+            radius: 6,
+            color: "#fff",
+            weight: 1,
+            fillColor: color,
+            fillOpacity: 0.9,
+          })
+            .bindPopup(popup(f), { maxWidth: 330 })
+            .addTo(group);
+        });
+    }
+    function switchLayer(input, layer) {
+      input.addEventListener("change", (e) =>
+        e.target.checked ? layer.addTo(map) : map.removeLayer(layer),
+      );
+    }
+    function clippedKernel(url, boundary) {
+      const west = 98.943,
+        east = 99.03,
+        north = 18.84,
+        south = 18.753,
+        width = 460,
+        height = 485,
+        toPath = (ring) =>
+          ring
+            .map(
+              ([lng, lat], i) =>
+                `${i ? "L" : "M"}${(((lng - west) / (east - west)) * width).toFixed(2)},${(((north - lat) / (north - south)) * height).toFixed(2)}`,
+            )
+            .join(" ") + "Z",
+        rings = boundary.features.flatMap((feature) =>
+          feature.geometry.type === "Polygon"
+            ? feature.geometry.coordinates
+            : feature.geometry.coordinates.flat(),
+        ),
+        path = rings.map(toPath).join(" "),
+        source = new URL(`public/${url}`, location.href).href,
+        markup = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}"><defs><clipPath id="municipal-boundary"><path d="${path}" fill-rule="evenodd"/></clipPath></defs><image href="${source}" width="${width}" height="${height}" clip-path="url(#municipal-boundary)"/></svg>`,
+        svg = new DOMParser().parseFromString(
+          markup,
+          "image/svg+xml",
+        ).documentElement;
+      return L.svgOverlay(
+        svg,
+        [
+          [south, west],
+          [north, east],
+        ],
+        { opacity: 0.92, interactive: false },
+      );
+    }
+    Promise.all([
+      load(C.files.detections),
+      load(C.files.oldTownPoints),
+      load(C.files.peripheryPoints),
+      load(C.files.municipality),
+      load(C.files.oldCity),
+      load(C.files.periphery),
+      load(C.files.hotspots.all),
+      load(C.files.hotspots.kalae),
+      load(C.files.hotspots.kom),
+      load(C.files.hotspots.text),
+      load("data/point_20m.geojson"),
+      view === "points" ? load("data/roads.geojson") : Promise.resolve(null),
+    ])
+      .then(
+        ([
+          all,
+          old,
+          peri,
+          mun,
+          oldPoly,
+          periPoly,
+          hotAll,
+          hotKalae,
+          hotKom,
+          hotText,
+          p20,
+          roads,
+        ]) => {
+          const controls = document.querySelector("#controls"),
+            legend = document.querySelector("#legend"),
+            area = L.geoJSON(mun, {
+              style: { color: "#237b70", weight: 2, fillOpacity: 0 },
+            }).addTo(map);
+          map.fitBounds(area.getBounds().pad(0.06));
+          if (view === "points") {
+            const detected = L.layerGroup().addTo(map),
+              twenty = L.geoJSON(p20, {
+                pointToLayer: (f, ll) =>
+                  L.circleMarker(ll, {
+                    radius: 1.5,
+                    color: "#d49725",
+                    weight: 0.5,
+                    fillColor: "#d49725",
+                    fillOpacity: 0.7,
+                  }),
+              }),
+              road = L.geoJSON(roads, {
+                pane: "roads",
+                renderer: L.canvas({ padding: 0.5, pane: "roads" }),
+                interactive: false,
+                style: { color: "#3f88c5", weight: 0.7, opacity: 0.7 },
+              }).addTo(map);
+            markers(all, "#b74832", detected);
+            controls.innerHTML =
+              check(
+                "detected",
+                `จุดที่ตรวจจับได้ (${all.features.length.toLocaleString()})`,
+                true,
+              ) +
+              check(
+                "twenty",
+                `จุดที่ได้จากการสร้างระยะ 20 เมตร (${(p20.features || []).length.toLocaleString()})`,
+              ) +
+              check("roads", "เส้นถนน", true);
+            legend.innerHTML =
+              '<i style="background:#b74832"></i> จุดอัตลักษณ์ที่ตรวจจับได้<br><i style="background:#d49725"></i> จุดที่ได้จากการสร้างระยะ 20 เมตร<br><i style="background:#3f88c5"></i> เส้นถนน';
+            [
+              ["detected", detected],
+              ["twenty", twenty],
+              ["roads", road],
+            ].forEach(([x, l]) =>
+              switchLayer(document.querySelector("#" + x), l),
+            );
+          }
+          if (view === "analysis") {
+            const kernelFiles = {
+              kernelAll: "data/kernel_all.png?v=5",
+              kernelKalae: "data/kernel_kalae.png?v=5",
+              kernelKom: "data/kernel_kom.png?v=5",
+              kernelText: "data/kernel_text.png?v=5",
+            },
+              kernels = Object.fromEntries(
+                Object.entries(kernelFiles).map(([x, u]) => [
+                  x,
+                  clippedKernel(u, mun),
+                ]),
+              ),
+              makeHot = (data) =>
+                L.geoJSON(data, {
+                  pointToLayer: (f, ll) => {
+                    const v = +f.properties.Gi_Bin,
+                      c = {
+                        "-3": "#2166ac",
+                        "-2": "#67a9cf",
+                        "-1": "#c7e0d8",
+                        0: "#bdbdbd",
+                        1: "#f4c7a1",
+                        2: "#ef7958",
+                        3: "#c92f28",
+                      }[v] || "#bdbdbd";
+                    return L.circleMarker(ll, {
+                      radius: v ? 5 : 3,
+                      color: c,
+                      fillColor: c,
+                      fillOpacity: 0.75,
+                    });
+                  },
+                }),
+              hots = {
+                hotAll: makeHot(hotAll),
+                hotKalae: makeHot(hotKalae),
+                hotKom: makeHot(hotKom),
+                hotText: makeHot(hotText),
+              },
+              names = {
+                kernelAll: "รวมทั้งหมด",
+                kernelKalae: "กาแล",
+                kernelKom: "โคม",
+                kernelText: "อักษรล้านนา",
+                hotAll: "รวมทั้งหมด",
+                hotKalae: "กาแล",
+                hotKom: "โคม",
+                hotText: "อักษรล้านนา",
+              },
+              kernelMax = {
+                kernelAll: 322.43533325195,
+                kernelKalae: 148.4397277832,
+                kernelKom: 185.94612121582,
+                kernelText: 30.73192024231,
+              },
+              ki = Object.keys(kernels),
+              hi = Object.keys(hots),
+              setKernelCaption = (x) => {
+                const max = kernelMax[x],
+                  low = max * 0.3,
+                  mid = max * 0.5;
+                document.querySelector("#caption").innerHTML =
+                  `<b>Kernel Density: ${names[x]}</b><br>ค่าเริ่มแสดง ${low.toFixed(2)} · ปานกลาง ${mid.toFixed(2)} · สูง ${max.toFixed(2)}<br>น้ำเงิน = Cold Spot · แดง = Hot Spot`;
+              };
+            const hotClasses = [
+              [-3, "#2166ac", "Cold Spot 99%"],
+              [-2, "#67a9cf", "Cold Spot 95%"],
+              [-1, "#c7e0d8", "Cold Spot 90%"],
+              [0, "#bdbdbd", "Not Significant"],
+              [1, "#f4c7a1", "Hot Spot 90%"],
+              [2, "#ef7958", "Hot Spot 95%"],
+              [3, "#c92f28", "Hot Spot 99%"],
+            ],
+              setHotCaption = (x, data) => {
+                const rows = hotClasses
+                  .map(([value, color, label]) => {
+                    const frequency = data.features.filter(
+                      (feature) => +feature.properties.Gi_Bin === value,
+                    ).length;
+                    return `<span class="kernel-caption-row"><i style="background:${color}"></i>Gi_Bin ${value} · ${label} (${frequency})</span>`;
+                  })
+                  .join("");
+                document.querySelector("#caption").innerHTML =
+                  `<div class="kernel-caption-title">Hot Spot / Cold Spot: ${names[x]}</div><div class="kernel-caption-label">Gi_Bin · FREQUENCY</div>${rows}`;
+              };
+            controls.innerHTML = `<section class="analysis-layer-group"><h3>Kernel Density</h3>${ki.map((x) => check(x, names[x], x === "kernelAll")).join("")}</section><section class="analysis-layer-group"><h3>Hot Spot / Cold Spot</h3>${hi.map((x) => check(x, names[x])).join("")}</section>`;
+            legend.style.display = "none";
+            const wire = (ids, layers) =>
+              ids.forEach((x) =>
+                switchLayer(document.querySelector("#" + x), layers[x]),
+              );
+            wire(ki, kernels);
+            wire(hi, hots);
+            const exclusive = (ids, layers) =>
+              ids.forEach((x) =>
+                document
+                  .querySelector("#" + x)
+                  .addEventListener("change", (e) => {
+                    if (e.target.checked)
+                      ids
+                        .filter((y) => y !== x)
+                        .forEach((y) => {
+                          const q = document.querySelector("#" + y);
+                          q.checked = false;
+                          map.removeLayer(layers[y]);
+                        });
+                  }),
+              );
+            exclusive(ki, kernels);
+            exclusive(hi, hots);
+            ki.forEach((x) =>
+              document
+                .querySelector("#" + x)
+                .addEventListener("change", (e) => {
+                  if (e.target.checked) setKernelCaption(x);
+                }),
+            );
+            hi.forEach((x) =>
+              document
+                .querySelector("#" + x)
+                .addEventListener("change", (e) => {
+                  if (e.target.checked)
+                    setHotCaption(
+                      x,
+                      {
+                        hotAll,
+                        hotKalae,
+                        hotKom,
+                        hotText,
+                      }[x],
+                    );
+                }),
+            );
+            setKernelCaption("kernelAll");
+            kernels.kernelAll.addTo(map);
+          }
+          if (view === "comparison") {
+            const go = L.layerGroup().addTo(map),
+              gp = L.layerGroup().addTo(map),
+              bo = L.geoJSON(oldPoly, {
+                style: { color: "#b74832", weight: 2, fillOpacity: 0.08 },
+              }).addTo(map),
+              bp = L.geoJSON(periPoly, {
+                style: {
+                  color: "#237b70",
+                  weight: 3,
+                  opacity: 1,
+                  fillColor: "#237b70",
+                  fillOpacity: 0.04,
+                },
+              }).addTo(map);
+            bp.bringToFront();
+            markers(old, "#b74832", go);
+            markers(peri, "#237b70", gp);
+            controls.innerHTML =
+              check("old", `จุดในเมืองเก่า (${old.features.length})`, true) +
+              check(
+                "peri",
+                `จุดพื้นที่โดยรอบ (${peri.features.length})`,
+                true,
+              ) +
+              check("oldBound", "ขอบเขตเมืองเก่า", true) +
+              check("periBound", "ขอบเขตพื้นที่โดยรอบ", true) +
+              check("municipality", "ขอบเขตเทศบาลนครเชียงใหม่", true);
+            legend.innerHTML =
+              '<i style="background:#b74832"></i> เมืองเก่า<br><i style="background:#237b70"></i> พื้นที่โดยรอบ';
+            [
+              ["old", go],
+              ["peri", gp],
+              ["oldBound", bo],
+              ["periBound", bp],
+              ["municipality", area],
+            ].forEach(([x, l]) =>
+              switchLayer(document.querySelector("#" + x), l),
+            );
+          }
+        },
+      )
+      .catch((e) => {
+        document.querySelector("#intro").textContent =
+          "ไม่สามารถเปิดข้อมูลแผนที่ได้";
+        console.error(e);
+      });
+  </script>
+  <script>
+    map.on("layeradd", (event) => {
+      const data = event.layer.toGeoJSON?.(),
+        feature = data?.features?.[0];
+      if (feature?.properties?.FID === 0)
+        event.layer.setStyle({
+          color: "#fff",
+          weight: 1,
+          opacity: 0.4,
+          fillColor: "#fff",
+          fillOpacity: 0.06,
+        });
+    });
+  </script>
+</body>
+
+</html>
