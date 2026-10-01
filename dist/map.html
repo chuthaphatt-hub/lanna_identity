@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>แผนที่ล้านนา | Chiang Mai</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    body {
+      background: #f7f1e7;
+    }
+
+    .map-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 5vw;
+      background: #181411;
+      color: #fff;
+      font:
+        700 0.76rem Arial,
+        sans-serif;
+      letter-spacing: 0.1em;
+    }
+
+    .map-top a {
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .map-shell {
+      display: grid;
+      grid-template-columns: 310px 1fr;
+      min-height: calc(100vh - 54px);
+    }
+
+    .map-panel {
+      padding: 25px;
+      background: #fcf9f2;
+      z-index: 2;
+    }
+
+    .map-panel .eyebrow {
+      margin-top: 0;
+    }
+
+    .map-panel h1 {
+      font-size: 2rem;
+      font-weight: 400;
+      line-height: 1.18;
+      margin: 0 0 12px;
+    }
+
+    .map-panel p {
+      font-size: 0.9rem;
+    }
+
+    .map-panel label {
+      display: block;
+      padding: 9px 0;
+      cursor: pointer;
+    }
+
+    .map-panel input {
+      accent-color: #237b70;
+      margin-right: 6px;
+    }
+
+    .analysis-layer-group {
+      margin: 19px 0 0;
+      padding-top: 13px;
+      border-top: 1px solid #e3d7c5;
+    }
+
+    .analysis-layer-group:first-child {
+      margin-top: 0;
+    }
+
+    .analysis-layer-group h3 {
+      margin: 0;
+      color: #237b70;
+      font:
+        700 0.78rem Arial,
+        sans-serif;
+      letter-spacing: 0.09em;
+    }
+
+    .legend {
+      margin-top: 22px;
+      padding-top: 12px;
+      border-top: 1px solid #e3d7c5;
+      font-size: 0.83rem;
+    }
+
+    .legend i {
+      display: inline-block;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+
+    .map-canvas {
+      position: relative;
+    }
+
+    .map-canvas,
+    #map {
+      height: calc(100vh - 54px);
+    }
+
+    .map-caption {
+      position: absolute;
+      z-index: 500;
+      bottom: 20px;
+      left: 16px;
+      padding: 8px 11px;
+      background: #fffc;
+      border: 1px solid #c9bca8;
+      font-size: 0.82rem;
+    }
+
+    .popup-photos {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      max-width: 290px;
+      margin: 0 auto;
+      overflow: auto;
+    }
+
+    .popup-photos img {
+      display: block;
+      width: 240px;
+      height: auto;
+      max-height: 240px;
+      object-fit: initial;
+      flex: 0 0 auto;
+    }
+
+    .tour-popup {
+      min-width: 260px;
+    }
+
+    .tour-popup h3 {
+      margin: 4px 0 7px;
+      color: #96382e;
+      font-size: 1.05rem;
+    }
+
+    .tour-popup p {
+      margin: 6px 0;
+      font-size: 0.83rem;
+    }
+
+    .popup-kicker {
+      margin-top: 10px !important;
+      color: #237b70;
+      font:
+        700 0.67rem Arial,
+        sans-serif !important;
+      letter-spacing: 0.1em;
+    }
+
+    .popup-identities {
+      margin: 0 0 9px;
+      padding: 0;
+      list-style: none;
+      border-top: 1px solid #eadfce;
+    }
+
+    .popup-identities li {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 5px 0;
+      border-bottom: 1px solid #eadfce;
+      font-size: 0.82rem;
+    }
+
+    .popup-identities span {
+      color: #756a5c;
+    }
+
+    .popup-route {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 0;
+      background: transparent;
+      color: #24201d;
+      text-decoration: none;
+      font:
+        700 0.8rem Arial,
+        sans-serif;
+    }
+
+    @media (max-width: 760px) {
+      .map-shell {
+        display: block;
+      }
+
+      .map-panel {
+        padding: 18px 7vw;
+      }
+
+      .map-canvas,
+      #map {
+        height: 68vh;
+      }
+
+      .map-panel h1 {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+  <script type="module" crossorigin src="/assets/map-Btp977mg.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/main-DGNgpZQm.js">
+</head>
+
+<body>
+  <div id="root"></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/js/config.js?v=kernel-legend-3"></script>
+</body>
+
+</html>

@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>แผนที่ล้านนา | Chiang Mai</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="public/css/style.css" />
+  <link rel="stylesheet" href="/css/style.css" />
   <style>
     body {
       background: #f7f1e7;
@@ -218,25 +218,11 @@
 </head>
 
 <body>
-  <header class="map-top">
-    <a href="maps.html">← เลือกแผนที่</a><a href="index.html">LANNA / CHIANG MAI</a>
-  </header>
-  <main class="map-shell">
-    <aside class="map-panel">
-      <p class="eyebrow" id="kicker"></p>
-      <h1 id="title"></h1>
-      <p id="intro"></p>
-      <div id="controls"></div>
-      <div id="legend" class="legend"></div>
-    </aside>
-    <section class="map-canvas">
-      <div id="map"></div>
-      <div id="caption" class="map-caption"></div>
-    </section>
-  </main>
+  <div id="root"></div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="public/js/config.js?v=kernel-legend-3"></script>
-  <script>
+  <script src="/js/config.js?v=kernel-legend-3"></script>
+  <script type="module" src="/src/main.jsx"></script>
+  <script type="module">
     const preview =
       new URLSearchParams(location.search).get("mobile-preview") === "1";
     if (preview) {
@@ -286,6 +272,7 @@
       [18.79, 98.985],
       13,
     );
+    window.map = map;
     map.createPane("roads");
     map.getPane("roads").style.zIndex = 350;
     const lightMap = L.tileLayer(
@@ -319,7 +306,7 @@
     baseMapControl.getContainer().title = "BASE MAP";
     L.control.zoom({ position: "bottomright" }).addTo(map);
     const load = (u) =>
-      fetch(`public/${u}`).then((r) => {
+      fetch(u).then((r) => {
         if (!r.ok) throw Error(u);
         return r.json();
       }),
@@ -359,7 +346,7 @@
           .flatMap((run) =>
             ["left", "right"].map(
               (side) =>
-                `<img src="public/images/run${run}_point_${n}_${side}.jpg" onerror="this.remove()" alt="ภาพ Street View">`,
+                `<img src="/images/run${run}_point_${n}_${side}.jpg" onerror="this.remove()" alt="ภาพ Street View">`,
             ),
           )
           .join(""),
@@ -412,7 +399,7 @@
             : feature.geometry.coordinates.flat(),
         ),
         path = rings.map(toPath).join(" "),
-        source = new URL(`public/${url}`, location.href).href,
+        source = new URL(url, location.href).href,
         markup = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}"><defs><clipPath id="municipal-boundary"><path d="${path}" fill-rule="evenodd"/></clipPath></defs><image href="${source}" width="${width}" height="${height}" clip-path="url(#municipal-boundary)"/></svg>`,
         svg = new DOMParser().parseFromString(
           markup,
@@ -687,8 +674,8 @@
         console.error(e);
       });
   </script>
-  <script>
-    map.on("layeradd", (event) => {
+  <script type="module">
+    window.map.on("layeradd", (event) => {
       const data = event.layer.toGeoJSON?.(),
         feature = data?.features?.[0];
       if (feature?.properties?.FID === 0)
