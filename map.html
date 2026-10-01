@@ -243,6 +243,7 @@
         "beforeend",
         '<div class="map-tabs-wrap" id="mapTabs"><button class="map-tabs-toggle" type="button" aria-expanded="true">แผนที่อื่น ▴</button><nav class="map-tabs"><a href="map.html?view=points" data-view="points"><b>01 · CULTURAL POINTS</b><span>แผนที่จุดทั้งหมด</span></a><a href="map.html?view=analysis" data-view="analysis"><b>02 · SPATIAL ANALYSIS</b><span>แผนที่การวิเคราะห์</span></a><a href="map.html?view=comparison" data-view="comparison"><b>03 · AREA COMPARISON</b><span>เปรียบเทียบเมืองเก่า</span></a></nav></div>',
       );
+    const publicBase = import.meta.env.BASE_URL;
     const C = MAP_CONFIG,
       view = new URLSearchParams(location.search).get("view") || "points",
       meta =
@@ -347,7 +348,7 @@
           .flatMap((run) =>
             ["left", "right"].map(
               (side) =>
-                `<img src="/images/run${run}_point_${n}_${side}.jpg" onerror="this.remove()" alt="ภาพ Street View">`,
+                `<img src="${publicBase}images/run${run}_point_${n}_${side}.jpg" onerror="this.remove()" alt="ภาพ Street View">`,
             ),
           )
           .join(""),

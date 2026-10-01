@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+const appBase = import.meta.env.BASE_URL;
 
 const identities = [
     {
         number: "01",
         title: "กาแล",
-        image: "/images/run3_point_4101_right.jpg",
+        image: `${appBase}images/run3_point_4101_right.jpg`,
         alt: "ตัวอย่างกาแลจากข้อมูลภาพถนน",
         description:
             "ไม้แกะสลักที่ประดับอยู่บนยอดจั่วหลังคาของบ้านหรือเรือนไม้โบราณล้านนา โดยติดในลักษณะไขว้กันเป็นรูปกากบาท",
@@ -12,7 +14,7 @@ const identities = [
     {
         number: "02",
         title: "โคม",
-        image: "/images/run4_point_2378_left.jpg",
+        image: `${appBase}images/run4_point_2378_left.jpg`,
         alt: "ตัวอย่างโคมจากข้อมูลภาพถนน",
         description:
             "เครื่องโคมไฟที่มีที่บังลม เป็นเครื่องพุทธบูชาและเครื่องประดับตกแต่งเพื่อความสิริมงคล ที่เชื่อมโยงพื้นที่สถาปัตยกรรมและกิจกรรมชุมชน",
@@ -20,7 +22,7 @@ const identities = [
     {
         number: "03",
         title: "อักษรล้านนา",
-        image: "/images/run1_point_934_left.jpg",
+        image: `${appBase}images/run1_point_934_left.jpg`,
         alt: "ตัวอย่างอักษรล้านนาจากข้อมูลภาพถนน",
         description:
             "เรียกว่า “อักษรธรรมล้านนา” หรือชาวล้านนาเรียกว่า “ตั๋วเมือง” ใช้บันทึกเรื่องราว วัฒนธรรม และศาสนาในภูมิภาคล้านนาในอดีต",
@@ -101,6 +103,11 @@ function AboutDrawer({ open, onClose }) {
 
 function App() {
     const [aboutOpen, setAboutOpen] = useState(false);
+    const aboutButtonRef = useRef(null);
+    const closeAbout = () => {
+        setAboutOpen(false);
+        aboutButtonRef.current?.focus();
+    };
 
     useEffect(() => {
         document.body.classList.add("tourist-mode");
@@ -158,6 +165,7 @@ function App() {
                     <a href="#explore">แผนที่</a>
                     <button
                         id="aboutButton"
+                        ref={aboutButtonRef}
                         type="button"
                         aria-controls="aboutDrawer"
                         aria-expanded={aboutOpen}
@@ -167,10 +175,10 @@ function App() {
                     </button>
                 </nav>
             </header>
-            <AboutDrawer open={aboutOpen} onClose={() => setAboutOpen(false)} />
+            <AboutDrawer open={aboutOpen} onClose={closeAbout} />
             <main>
                 <section id="home" className="hero">
-                    <img src="/assets/lanna-hero.jpg" alt="อาคารล้านนาที่ประดับโคมและกาแล" />
+                    <img src={`${appBase}assets/lanna-hero.jpg`} alt="อาคารล้านนาที่ประดับโคมและกาแล" />
                     <div className="hero-shade" />
                     <div className="hero-copy">
                         <p className="eyebrow">CULTURE EXPLORER · CHIANG MAI</p>
@@ -213,7 +221,7 @@ function App() {
                     </div>
                     <div className="home-map-choices">
                         {maps.map((map) => (
-                            <a key={map.view} href={`/map.html?view=${map.view}`}>
+                            <a key={map.view} href={`${appBase}map.html?view=${map.view}`}>
                                 <span>
                                     {map.number} · {map.category}
                                 </span>
